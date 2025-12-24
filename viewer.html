@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- model-viewer (module 권장) -->
+  <script type="module"
+    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+  </script>
 
   <style>
     html, body {
@@ -13,22 +16,30 @@
       width: 100%;
       height: 100%;
       background: #fff;
+      overflow: hidden;
     }
 
     model-viewer {
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      display: block;
     }
   </style>
 </head>
 
 <body>
   <model-viewer
-    src="cloth_jacket.glb"
+    src="./cloth_jacket.glb"
     camera-controls
     auto-rotate
-    rotation-per-second="10deg"
-    interaction-prompt="none">
+    rotation-per-second="8deg"
+    bounds="tight"
+    camera-orbit="0deg 75deg 2.5m"
+    field-of-view="30deg"
+    exposure="1.1"
+    shadow-intensity="0.3"
+    interaction-prompt="none"
+    background-color="#ffffff">
   </model-viewer>
 </body>
 </html>
