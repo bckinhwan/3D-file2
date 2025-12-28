@@ -23,6 +23,8 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
+
+      /* 모바일 더블탭 확대 방지 */
       touch-action: pan-y;
     }
   </style>
@@ -37,20 +39,12 @@
     interaction-prompt="none"
     disable-zoom
 
-    /* 🔥 1. 자동 타이트 프레이밍 완전 해제 */
-    bounds="legacy"
-
-    /* 🔥 2. 카메라 매우 멀리 */
+    /* 네가 원하는 최종 상태 값 */
     camera-orbit="0deg 80deg 8.5m"
-
-    /* 🔥 3. 시야각 망원 */
     field-of-view="18deg"
-
-    /* 🔥 4. 모델 자체를 오브제로 축소 */
     scale="0.45 0.45 0.45"
-
-    /* 🔥 5. 화면 중심보다 아래로 타겟 이동 */
     camera-target="0m 0.4m 0m"
+    bounds="legacy"
 
     exposure="1.0"
     shadow-intensity="0.15"
@@ -60,12 +54,21 @@
   <script>
     const viewer = document.getElementById('viewer');
 
+    /**
+     * ✅ 핵심 로직
+     * GLB 로딩 완료 → 더블클릭 효과를 강제로 실행
+     */
     viewer.addEventListener('load', () => {
+      // 다음 프레임까지 기다려서
+      // bounding 계산이 100% 끝난 뒤 실행
       requestAnimationFrame(() => {
-        viewer.jumpCameraToGoal();
+        requestAnimationFrame(() => {
+          viewer.jumpCameraToGoal();
+        });
       });
     });
 
+    /* ❌ 이후 더블클릭 완전 차단 */
     viewer.addEventListener('dblclick', e => {
       e.preventDefault();
       e.stopPropagation();
@@ -73,4 +76,5 @@
   </script>
 </body>
 </html>
+
 
