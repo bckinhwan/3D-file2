@@ -17,42 +17,58 @@
     html, body {
       margin: 0;
       padding: 0;
-      width:  100%;
+      width: 100%;
       height: 100%;
       overflow: hidden;
       background: #fff;
     }
 
     model-viewer {
-      width: 60vw;
-      height: 60vh;
+      width: 100vw;
+      height: 100vh;
       background: #fff;
+
+      /* 🔒 더블클릭/더블탭 차단 */
+      touch-action: pan-y;
     }
   </style>
 </head>
 
 <body>
   <model-viewer
+    id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
     camera-controls
     disable-zoom
     interaction-prompt="none"
 
-    /* 🔑 핵심 1: 카메라 더 멀리 */
-    camera-orbit="0deg 75deg 4.2m"
-
-    /* 🔑 핵심 2: 망원 더 강하게 */
+    /* 📐 원하는 최종 프레이밍 */
+    camera-orbit="0deg 75deg 4.8m"
     field-of-view="24deg"
-
-    /* 🔑 핵심 3: 모델 자체 축소 */
-    scale="0.75 0.75 0.75"
+    scale="0.7 0.7 0.7"
 
     bounds="tight"
-
     exposure="1.05"
     shadow-intensity="0.2"
   >
   </model-viewer>
+
+  <script>
+    const viewer = document.getElementById('viewer');
+
+    /* ✅ 초기 로드시 강제 reframe (더블클릭 효과를 미리 실행) */
+    viewer.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        viewer.jumpCameraToGoal();
+      });
+    });
+
+    /* ❌ 더블클릭으로 인한 reframe 완전 차단 */
+    viewer.addEventListener('dblclick', e => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  </script>
 </body>
 </html>
