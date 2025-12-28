@@ -29,7 +29,6 @@
 </head>
 
 <body>
-  <!-- model-viewer -->
   <model-viewer
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
@@ -70,11 +69,13 @@
       `${setting.scale} ${setting.scale} ${setting.scale}`
     );
 
-    viewer.addEventListener('model-visibility', () => {
+    // 🔑 여기 핵심: load 이벤트 사용
+    viewer.addEventListener('load', () => {
       viewer.show();
       viewer.jumpCameraToGoal();
     });
   </script>
 </body>
 </html>
+
 
