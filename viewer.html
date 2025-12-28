@@ -28,7 +28,7 @@
       height: 100vh;
       background: #fff;
 
-      /* 🔒 더블클릭/더블탭 차단 */
+      /* ✅ 모바일 더블탭 확대 방지 */
       touch-action: pan-y;
     }
   </style>
@@ -43,10 +43,9 @@
     disable-zoom
     interaction-prompt="none"
 
-    /* 📐 원하는 최종 프레이밍 */
-    camera-orbit="0deg 75deg 4.8m"
+    camera-orbit="0deg 75deg 10m"
     field-of-view="24deg"
-    scale="0.7 0.7 0.7"
+    scale="0.75 0.75 0.75"
 
     bounds="tight"
     exposure="1.05"
@@ -57,21 +56,22 @@
   <script>
     const viewer = document.getElementById('viewer');
 
-    /* ✅ 초기 로드시 강제 reframe (더블클릭 효과를 미리 실행) */
-    viewer.addEventListener('load', () => {
-      requestAnimationFrame(() => {
-        viewer.jumpCameraToGoal();
-      });
-    });
-
-    /* ❌ 더블클릭으로 인한 reframe 완전 차단 */
-    viewer.addEventListener('dblclick', e => {
+    /* ❌ 더블클릭으로 인한 reframe(화면 축소/확대) 완전 차단 */
+    viewer.addEventListener('dblclick', (e) => {
       e.preventDefault();
       e.stopPropagation();
+    });
+
+    /* ❌ 모바일에서 두 손가락 / 더블탭 제스처 차단 */
+    viewer.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
     });
   </script>
 </body>
 </html>
+
 
 
 
