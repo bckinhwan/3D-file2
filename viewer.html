@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, height=device-height, initial-scale=1.0"
+  />
   <title>3D Viewer</title>
 
-  <script type="module"
+  <script
+    type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
@@ -24,9 +28,8 @@
       height: 100vh;
       background: #fff;
 
-      /* 🔒 모든 제스처 레벨 차단 */
-      touch-action: none;
-      pointer-events: auto;
+      /* 모바일 제스처 최소화 */
+      touch-action: pan-y;
     }
   </style>
 </head>
@@ -36,19 +39,15 @@
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
-    /* 🔥 camera-controls OFF가 핵심 */
-    camera-controls="false"
+    camera-controls
     disable-zoom
     interaction-prompt="none"
 
-    /* 🔥 더블클릭 reframe 자체 무력화 */
-    bounds="legacy"
-
-    /* 🔥 네가 원하는 고정 상태 */
-    camera-orbit="0deg 75deg 8m"
+    camera-orbit="0deg 75deg 4.2m"
     field-of-view="24deg"
     scale="0.75 0.75 0.75"
 
+    bounds="tight"
     exposure="1.05"
     shadow-intensity="0.2"
   >
@@ -58,9 +57,39 @@
     const viewer = document.getElementById('viewer');
 
     /**
-     * 🔒 핵심 로직
-     * model-viewer 내부 reframe은
-     * camera-controls가 false면 실행되지 않음
+     * 🔒 고정할 카메라 값 (현재 네가 쓰는 값)
+     * 더블클릭이 일어나도 항상 이 상태로 되돌린다
+     */
+    const LOCK = {
+      orbit: '0deg 75deg 4.2m',
+      fov: '24deg',
+      scale: '0.75'
+    };
+
+    /**
+     * model-viewer 내부에서
+     * - 더블클릭
+     * - 자동 reframe
+     * - 기타 카메라 변경
+     * 이 발생하면 camera-change 이벤트가 뜸
+     *
+     * → 그 즉시 우리가 같은 값으로 덮어씀
+     */
+    viewer.addEventListener('camera-change', () => {
+      viewer.setAttribute('camera-orbit', LOCK.orbit);
+      viewer.setAttribute('field-of-view', LOCK.fov);
+      viewer.setAttribute(
+        'scale',
+        `${LOCK.scale} ${LOCK.scale} ${LOCK.scale}`
+      );
+
+      // 즉시 목표 카메라 값으로 점프
+      viewer.jumpCameraToGoal();
+    });
+
+    /**
+     * 초기 로드시에도 한 번 확정
+     * (로딩 타이밍으로 인한 1차 튐 방지)
      */
     viewer.addEventListener('load', () => {
       requestAnimationFrame(() => {
@@ -70,6 +99,7 @@
   </script>
 </body>
 </html>
+
 
 
 
