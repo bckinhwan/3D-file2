@@ -2,14 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, height=device-height, initial-scale=1.0"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3D Viewer</title>
 
-  <script
-    type="module"
+  <script type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
@@ -27,8 +23,6 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
-
-      /* 🔒 더블클릭/더블탭 차단 */
       touch-action: pan-y;
     }
   </style>
@@ -39,32 +33,39 @@
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
-    camera-controls
-    disable-zoom
+    camera-controls="false"
     interaction-prompt="none"
+    disable-zoom
 
-    /* 📐 원하는 최종 프레이밍 */
-    camera-orbit="0deg 75deg 4.8m"
-    field-of-view="24deg"
-    scale="0.7 0.7 0.7"
+    /* 🔥 1. 자동 타이트 프레이밍 완전 해제 */
+    bounds="legacy"
 
-    bounds="tight"
-    exposure="1.05"
-    shadow-intensity="0.2"
+    /* 🔥 2. 카메라 매우 멀리 */
+    camera-orbit="0deg 80deg 8.5m"
+
+    /* 🔥 3. 시야각 망원 */
+    field-of-view="18deg"
+
+    /* 🔥 4. 모델 자체를 오브제로 축소 */
+    scale="0.45 0.45 0.45"
+
+    /* 🔥 5. 화면 중심보다 아래로 타겟 이동 */
+    camera-target="0m 0.4m 0m"
+
+    exposure="1.0"
+    shadow-intensity="0.15"
   >
   </model-viewer>
 
   <script>
     const viewer = document.getElementById('viewer');
 
-    /* ✅ 초기 로드시 강제 reframe (더블클릭 효과를 미리 실행) */
     viewer.addEventListener('load', () => {
       requestAnimationFrame(() => {
         viewer.jumpCameraToGoal();
       });
     });
 
-    /* ❌ 더블클릭으로 인한 reframe 완전 차단 */
     viewer.addEventListener('dblclick', e => {
       e.preventDefault();
       e.stopPropagation();
@@ -72,3 +73,4 @@
   </script>
 </body>
 </html>
+
