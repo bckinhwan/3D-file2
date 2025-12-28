@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, height=device-height, initial-scale=1.0"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3D Viewer</title>
 
   <script type="module"
@@ -26,7 +23,7 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
-      touch-action: pan-y; /* 모바일 제스처 안정화 */
+      touch-action: pan-y;
     }
   </style>
 </head>
@@ -52,6 +49,7 @@
 
   <script>
     const viewer = document.getElementById('viewer');
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
 
     // 🔒 고정 카메라 값
     const LOCK = {
@@ -60,11 +58,7 @@
       scale: '0.75'
     };
 
-    /**
-     * 🔑 클릭이 발생하면 항상 이 함수로 귀결
-     * (single click / double click / tap 공통)
-     */
-    function lockCamera() {
+    function applyLock() {
       viewer.setAttribute('camera-orbit', LOCK.orbit);
       viewer.setAttribute('field-of-view', LOCK.fov);
       viewer.setAttribute(
@@ -77,33 +71,45 @@
     /* =========================
        데스크탑: 클릭 / 더블클릭
     ========================= */
-    viewer.addEventListener('click', () => {
-      requestAnimationFrame(lockCamera);
-    });
+    if (!isMobile) {
+      viewer.addEventListener('click', () => {
+        requestAnimationFrame(applyLock);
+      });
 
-    viewer.addEventListener('dblclick', () => {
-      requestAnimationFrame(lockCamera);
-    });
+      viewer.addEventListener('dblclick', () => {
+        requestAnimationFrame(applyLock);
+      });
+    }
 
     /* =========================
-       모바일: 터치 대응
+       모바일: camera-change 감시
+       (회전 중에는 무시)
     ========================= */
+    if (isMobile) {
+      let rotating = false;
 
-    // 핀치 차단
-    viewer.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 1) e.preventDefault();
-    }, { passive: false });
+      viewer.addEventListener('pointerdown', () => {
+        rotating = true;
+      });
 
-    // 터치 끝나면 항상 복귀
-    viewer.addEventListener('touchend', () => {
-      requestAnimationFrame(lockCamera);
-    });
+      viewer.addEventListener('pointerup', () => {
+        rotating = false;
+        // 손을 떼면 원래 값으로 복귀
+        requestAnimationFrame(applyLock);
+      });
+
+      viewer.addEventListener('camera-change', () => {
+        if (!rotating) {
+          requestAnimationFrame(applyLock);
+        }
+      });
+    }
 
     /* =========================
-       초기 로드 시 1회 고정
+       초기 로드시 1회 고정
     ========================= */
     viewer.addEventListener('load', () => {
-      requestAnimationFrame(lockCamera);
+      requestAnimationFrame(applyLock);
     });
   </script>
 </body>
