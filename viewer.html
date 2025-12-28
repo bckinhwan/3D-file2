@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, height=device-height, initial-scale=1.0"
+  />
   <title>3D Viewer</title>
 
-  <script type="module"
+  <script
+    type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
@@ -24,7 +28,7 @@
       height: 100vh;
       background: #fff;
 
-      /* 모바일 더블탭 확대 방지 */
+      /* 🔒 더블클릭/더블탭 차단 */
       touch-action: pan-y;
     }
   </style>
@@ -35,40 +39,32 @@
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
-    camera-controls="false"
-    interaction-prompt="none"
+    camera-controls
     disable-zoom
+    interaction-prompt="none"
 
-    /* 네가 원하는 최종 상태 값 */
-    camera-orbit="0deg 80deg 8.5m"
-    field-of-view="18deg"
-    scale="0.45 0.45 0.45"
-    camera-target="0m 0.4m 0m"
-    bounds="legacy"
+    /* 📐 원하는 최종 프레이밍 */
+    camera-orbit="0deg 75deg 4.8m"
+    field-of-view="24deg"
+    scale="0.7 0.7 0.7"
 
-    exposure="1.0"
-    shadow-intensity="0.15"
+    bounds="tight"
+    exposure="1.05"
+    shadow-intensity="0.2"
   >
   </model-viewer>
 
   <script>
     const viewer = document.getElementById('viewer');
 
-    /**
-     * ✅ 핵심 로직
-     * GLB 로딩 완료 → 더블클릭 효과를 강제로 실행
-     */
+    /* ✅ 초기 로드시 강제 reframe (더블클릭 효과를 미리 실행) */
     viewer.addEventListener('load', () => {
-      // 다음 프레임까지 기다려서
-      // bounding 계산이 100% 끝난 뒤 실행
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          viewer.jumpCameraToGoal();
-        });
+        viewer.jumpCameraToGoal();
       });
     });
 
-    /* ❌ 이후 더블클릭 완전 차단 */
+    /* ❌ 더블클릭으로 인한 reframe 완전 차단 */
     viewer.addEventListener('dblclick', e => {
       e.preventDefault();
       e.stopPropagation();
@@ -76,5 +72,6 @@
   </script>
 </body>
 </html>
+
 
 
