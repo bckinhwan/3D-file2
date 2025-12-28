@@ -2,14 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, height=device-height, initial-scale=1.0"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3D Viewer</title>
 
-  <script
-    type="module"
+  <script type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
@@ -28,8 +24,9 @@
       height: 100vh;
       background: #fff;
 
-      /* ✅ 모바일 더블탭 확대 방지 */
-      touch-action: pan-y;
+      /* 🔒 모든 제스처 레벨 차단 */
+      touch-action: none;
+      pointer-events: auto;
     }
   </style>
 </head>
@@ -39,15 +36,19 @@
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
-    camera-controls
+    /* 🔥 camera-controls OFF가 핵심 */
+    camera-controls="false"
     disable-zoom
     interaction-prompt="none"
 
-    camera-orbit="0deg 75deg 10m"
+    /* 🔥 더블클릭 reframe 자체 무력화 */
+    bounds="legacy"
+
+    /* 🔥 네가 원하는 고정 상태 */
+    camera-orbit="0deg 75deg 8m"
     field-of-view="24deg"
     scale="0.75 0.75 0.75"
 
-    bounds="tight"
     exposure="1.05"
     shadow-intensity="0.2"
   >
@@ -56,17 +57,15 @@
   <script>
     const viewer = document.getElementById('viewer');
 
-    /* ❌ 더블클릭으로 인한 reframe(화면 축소/확대) 완전 차단 */
-    viewer.addEventListener('dblclick', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    });
-
-    /* ❌ 모바일에서 두 손가락 / 더블탭 제스처 차단 */
-    viewer.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 1) {
-        e.preventDefault();
-      }
+    /**
+     * 🔒 핵심 로직
+     * model-viewer 내부 reframe은
+     * camera-controls가 false면 실행되지 않음
+     */
+    viewer.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        viewer.jumpCameraToGoal();
+      });
     });
   </script>
 </body>
