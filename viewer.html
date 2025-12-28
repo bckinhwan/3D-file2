@@ -8,8 +8,7 @@
   />
   <title>3D Viewer</title>
 
-  <script
-    type="module"
+  <script type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
@@ -27,7 +26,7 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
-      touch-action: pan-y;
+      touch-action: pan-y; /* 모바일 제스처 안정화 */
     }
   </style>
 </head>
@@ -54,7 +53,7 @@
   <script>
     const viewer = document.getElementById('viewer');
 
-    // 🔒 더블클릭 시 되돌릴 값
+    // 🔒 고정 카메라 값
     const LOCK = {
       orbit: '0deg 75deg 9m',
       fov: '24deg',
@@ -62,25 +61,53 @@
     };
 
     /**
-     * 더블클릭은 DOM 이벤트로 100% 못 잡는다.
-     * 그래서 "더블클릭 직후 한 프레임 뒤"에
-     * 카메라를 원래 값으로 되돌린다.
+     * 🔑 클릭이 발생하면 항상 이 함수로 귀결
+     * (single click / double click / tap 공통)
      */
+    function lockCamera() {
+      viewer.setAttribute('camera-orbit', LOCK.orbit);
+      viewer.setAttribute('field-of-view', LOCK.fov);
+      viewer.setAttribute(
+        'scale',
+        `${LOCK.scale} ${LOCK.scale} ${LOCK.scale}`
+      );
+      viewer.jumpCameraToGoal();
+    }
+
+    /* =========================
+       데스크탑: 클릭 / 더블클릭
+    ========================= */
+    viewer.addEventListener('click', () => {
+      requestAnimationFrame(lockCamera);
+    });
+
     viewer.addEventListener('dblclick', () => {
-      requestAnimationFrame(() => {
-        viewer.setAttribute('camera-orbit', LOCK.orbit);
-        viewer.setAttribute('field-of-view', LOCK.fov);
-        viewer.setAttribute(
-          'scale',
-          `${LOCK.scale} ${LOCK.scale} ${LOCK.scale}`
-        );
-        viewer.jumpCameraToGoal();
-      });
+      requestAnimationFrame(lockCamera);
+    });
+
+    /* =========================
+       모바일: 터치 대응
+    ========================= */
+
+    // 핀치 차단
+    viewer.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+
+    // 터치 끝나면 항상 복귀
+    viewer.addEventListener('touchend', () => {
+      requestAnimationFrame(lockCamera);
+    });
+
+    /* =========================
+       초기 로드 시 1회 고정
+    ========================= */
+    viewer.addEventListener('load', () => {
+      requestAnimationFrame(lockCamera);
     });
   </script>
 </body>
 </html>
-
 
 
 
