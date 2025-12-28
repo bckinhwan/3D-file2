@@ -23,7 +23,29 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
+
+      /* 완전 비인터랙션 */
       pointer-events: none;
+    }
+
+    /* ===============================
+       model-viewer 로딩 UI → 흰색
+    =============================== */
+
+    /* 로딩 배경 (회색 → 흰색) */
+    model-viewer::part(default-progress-mask) {
+      background-color: #fff !important;
+    }
+
+    /* 로딩 바 자체 (회색 → 흰색) */
+    model-viewer::part(default-progress-bar),
+    model-viewer::part(progress-bar) {
+      background-color: #fff !important;
+    }
+
+    /* 남는 오버레이 대비 */
+    model-viewer::part(loading-overlay) {
+      background-color: #fff !important;
     }
   </style>
 </head>
@@ -32,27 +54,33 @@
   <model-viewer
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
-    reveal="manual"
+
     camera-controls="false"
     disable-zoom
     interaction-prompt="none"
+
     auto-rotate
     auto-rotate-delay="0"
     rotation-per-second="5deg"
+
     exposure="1.05"
     shadow-intensity="0.2"
-    bounds="legacy">
+
+    bounds="legacy"
+  >
   </model-viewer>
 
   <script>
     const viewer = document.getElementById('viewer');
 
+    // 데스크탑
     const DESKTOP = {
       orbit: '0deg 75deg 9m',
       fov: '24deg',
       scale: '0.75'
     };
 
+    // 모바일
     const MOBILE = {
       orbit: '0deg 75deg 8m',
       fov: '24deg',
@@ -68,14 +96,9 @@
       'scale',
       `${setting.scale} ${setting.scale} ${setting.scale}`
     );
-
-    // 🔑 여기 핵심: load 이벤트 사용
-    viewer.addEventListener('load', () => {
-      viewer.show();
-      viewer.jumpCameraToGoal();
-    });
   </script>
 </body>
 </html>
+
 
 
