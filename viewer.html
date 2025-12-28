@@ -24,7 +24,7 @@
       height: 100vh;
       background: #fff;
 
-      /* 완전 비인터랙션 */
+      /* 🔒 완전 비인터랙션 */
       pointer-events: none;
     }
   </style>
@@ -35,6 +35,7 @@
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
+    reveal="manual"            <!-- 🔥 로딩바/스피너 제거 -->
     camera-controls="false"
     disable-zoom
     interaction-prompt="none"
@@ -62,33 +63,34 @@
 
     // 모바일: 살짝 작게
     const MOBILE = {
-      orbit: '0deg 75deg 8m', // 🔹 카메라 조금 뒤로
+      orbit: '0deg 75deg 8m',
       fov: '24deg',
-      scale: '0.65'            // 🔹 모델 약 13% 축소
+      scale: '0.65'
     };
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
-
     const setting = isMobile ? MOBILE : DESKTOP;
 
-    viewer.setAttribute(
-      'camera-orbit',
-      setting.orbit
-    );
-    viewer.setAttribute(
-      'field-of-view',
-      setting.fov
-    );
+    // 카메라 세팅
+    viewer.setAttribute('camera-orbit', setting.orbit);
+    viewer.setAttribute('field-of-view', setting.fov);
     viewer.setAttribute(
       'scale',
       `${setting.scale} ${setting.scale} ${setting.scale}`
     );
 
-    viewer.addEventListener('load', () => {
-      requestAnimationFrame(() => {
-        viewer.jumpCameraToGoal();
-      });
+    /**
+     * 🔑 모델이 실제로 렌더 가능한 상태가 되면
+     * 그때 화면에 등장 (로딩바 없이)
+     */
+    viewer.addEventListener('model-visibility', () => {
+      viewer.show();
+      viewer.jumpCameraToGoal();
     });
+  </script>
+</body>
+</html>
+
   </script>
 </body>
 </html>
