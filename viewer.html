@@ -35,26 +35,24 @@
   <model-viewer
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
-    /* 🔒 카메라 프레이밍 고정 */
     camera-controls
     disable-zoom
-
-    /* 📐 여기서 크기 결정됨 (핵심) */
-    camera-orbit="0deg 75deg 3.2m"
-    field-of-view="30deg"
-
-    /* ❌ 자동 리프레이밍 방지 */
-    bounds="tight"
     interaction-prompt="none"
 
-    /* 🎨 라이팅 */
-    exposure="1.1"
-    shadow-intensity="0.25"
+    /* 🔑 핵심 1: 카메라 더 멀리 */
+    camera-orbit="0deg 75deg 4.2m"
 
-    /* ❌ 자동 회전 제거 */
-    auto-rotate="false"
+    /* 🔑 핵심 2: 망원 더 강하게 */
+    field-of-view="24deg"
+
+    /* 🔑 핵심 3: 모델 자체 축소 */
+    scale="0.75 0.75 0.75"
+
+    bounds="tight"
+
+    exposure="1.05"
+    shadow-intensity="0.2"
   >
   </model-viewer>
 </body>
 </html>
-
