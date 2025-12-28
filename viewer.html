@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, height=device-height, initial-scale=1.0"
+  />
+  <title>3D Viewer</title>
 
-  <!-- model-viewer (module 권장) -->
-  <script type="module"
+  <script
+    type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
@@ -15,31 +19,42 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      background: #fff;
       overflow: hidden;
+      background: #fff;
     }
 
     model-viewer {
       width: 100vw;
       height: 100vh;
-      display: block;
+      background: #fff;
     }
   </style>
 </head>
 
 <body>
-<model-viewer
-  src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
-  camera-controls
-  auto-rotate
-  bounds="tight"
-  camera-orbit="0deg 75deg 3m"
-  field-of-view="30deg"
-  exposure="1.1"
-  shadow-intensity="0.3"
-  interaction-prompt="none"
-  style="width:100vw; height:100vh; background:#fff;">
-</model-viewer>
+  <model-viewer
+    src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
+    /* 🔒 카메라 프레이밍 고정 */
+    camera-controls
+    disable-zoom
+
+    /* 📐 여기서 크기 결정됨 (핵심) */
+    camera-orbit="0deg 75deg 3.2m"
+    field-of-view="30deg"
+
+    /* ❌ 자동 리프레이밍 방지 */
+    bounds="tight"
+    interaction-prompt="none"
+
+    /* 🎨 라이팅 */
+    exposure="1.1"
+    shadow-intensity="0.25"
+
+    /* ❌ 자동 회전 제거 */
+    auto-rotate="false"
+  >
+  </model-viewer>
 </body>
 </html>
+
