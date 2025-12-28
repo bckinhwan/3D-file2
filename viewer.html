@@ -23,95 +23,40 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
-      touch-action: pan-y;
+
+      /* 🔒 모든 사용자 입력 차단 */
+      pointer-events: none;
     }
   </style>
 </head>
 
 <body>
   <model-viewer
-    id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
-    camera-controls
+    /* ❌ 유저 인터랙션 완전 제거 */
+    camera-controls="false"
     disable-zoom
     interaction-prompt="none"
 
+    /* 🔄 자동 회전 */
+    auto-rotate
+    auto-rotate-delay="0"
+
+    /* 🎛️ 회전 속도 (낮을수록 느림) */
+    rotation-per-second="6deg"
+
+    /* 📐 네가 쓰던 카메라 값 */
     camera-orbit="0deg 75deg 9m"
     field-of-view="24deg"
     scale="0.75 0.75 0.75"
 
-    bounds="tight"
+    bounds="legacy"
+
     exposure="1.05"
     shadow-intensity="0.2"
   >
   </model-viewer>
-
-  <script>
-    const viewer = document.getElementById('viewer');
-    const isMobile = window.matchMedia('(pointer: coarse)').matches;
-
-    // 🔒 고정 카메라 값
-    const LOCK = {
-      orbit: '0deg 75deg 9m',
-      fov: '24deg',
-      scale: '0.75'
-    };
-
-    function applyLock() {
-      viewer.setAttribute('camera-orbit', LOCK.orbit);
-      viewer.setAttribute('field-of-view', LOCK.fov);
-      viewer.setAttribute(
-        'scale',
-        `${LOCK.scale} ${LOCK.scale} ${LOCK.scale}`
-      );
-      viewer.jumpCameraToGoal();
-    }
-
-    /* =========================
-       데스크탑: 클릭 / 더블클릭
-    ========================= */
-    if (!isMobile) {
-      viewer.addEventListener('click', () => {
-        requestAnimationFrame(applyLock);
-      });
-
-      viewer.addEventListener('dblclick', () => {
-        requestAnimationFrame(applyLock);
-      });
-    }
-
-    /* =========================
-       모바일: camera-change 감시
-       (회전 중에는 무시)
-    ========================= */
-    if (isMobile) {
-      let rotating = false;
-
-      viewer.addEventListener('pointerdown', () => {
-        rotating = true;
-      });
-
-      viewer.addEventListener('pointerup', () => {
-        rotating = false;
-        // 손을 떼면 원래 값으로 복귀
-        requestAnimationFrame(applyLock);
-      });
-
-      viewer.addEventListener('camera-change', () => {
-        if (!rotating) {
-          requestAnimationFrame(applyLock);
-        }
-      });
-    }
-
-    /* =========================
-       초기 로드시 1회 고정
-    ========================= */
-    viewer.addEventListener('load', () => {
-      requestAnimationFrame(applyLock);
-    });
-  </script>
 </body>
 </html>
 
