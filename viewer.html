@@ -24,7 +24,7 @@
       height: 100vh;
       background: #fff;
 
-      /* 🔒 모든 사용자 입력 차단 */
+      /* 완전 비인터랙션 */
       pointer-events: none;
     }
   </style>
@@ -32,31 +32,64 @@
 
 <body>
   <model-viewer
+    id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
 
-    /* ❌ 유저 인터랙션 완전 제거 */
     camera-controls="false"
     disable-zoom
     interaction-prompt="none"
 
-    /* 🔄 자동 회전 */
     auto-rotate
     auto-rotate-delay="0"
-
-    /* 🎛️ 회전 속도 (낮을수록 느림) */
-    rotation-per-second="6deg"
-
-    /* 📐 네가 쓰던 카메라 값 */
-    camera-orbit="0deg 75deg 9m"
-    field-of-view="24deg"
-    scale="0.75 0.75 0.75"
-
-    bounds="legacy"
+    rotation-per-second="5deg"
 
     exposure="1.05"
     shadow-intensity="0.2"
+
+    bounds="legacy"
   >
   </model-viewer>
+
+  <script>
+    const viewer = document.getElementById('viewer');
+
+    // 데스크탑 기본값
+    const DESKTOP = {
+      orbit: '0deg 75deg 8m',
+      fov: '24deg',
+      scale: '0.75'
+    };
+
+    // 모바일: 살짝 작게
+    const MOBILE = {
+      orbit: '0deg 75deg 10m', // 🔹 카메라 조금 뒤로
+      fov: '24deg',
+      scale: '0.65'            // 🔹 모델 약 13% 축소
+    };
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    const setting = isMobile ? MOBILE : DESKTOP;
+
+    viewer.setAttribute(
+      'camera-orbit',
+      setting.orbit
+    );
+    viewer.setAttribute(
+      'field-of-view',
+      setting.fov
+    );
+    viewer.setAttribute(
+      'scale',
+      `${setting.scale} ${setting.scale} ${setting.scale}`
+    );
+
+    viewer.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        viewer.jumpCameraToGoal();
+      });
+    });
+  </script>
 </body>
 </html>
 
