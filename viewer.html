@@ -27,8 +27,6 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
-
-      /* 모바일 제스처 최소화 */
       touch-action: pan-y;
     }
   </style>
@@ -43,7 +41,7 @@
     disable-zoom
     interaction-prompt="none"
 
-    camera-orbit="0deg 75deg 9m"
+    camera-orbit="0deg 75deg 4.2m"
     field-of-view="24deg"
     scale="0.75 0.75 0.75"
 
@@ -56,43 +54,26 @@
   <script>
     const viewer = document.getElementById('viewer');
 
-    /**
-     * 🔒 고정할 카메라 값 (현재 네가 쓰는 값)
-     * 더블클릭이 일어나도 항상 이 상태로 되돌린다
-     */
+    // 🔒 더블클릭 시 되돌릴 값
     const LOCK = {
-      orbit: '0deg 75deg 9m',
+      orbit: '0deg 75deg 4.2m',
       fov: '24deg',
       scale: '0.75'
     };
 
     /**
-     * model-viewer 내부에서
-     * - 더블클릭
-     * - 자동 reframe
-     * - 기타 카메라 변경
-     * 이 발생하면 camera-change 이벤트가 뜸
-     *
-     * → 그 즉시 우리가 같은 값으로 덮어씀
+     * 더블클릭은 DOM 이벤트로 100% 못 잡는다.
+     * 그래서 "더블클릭 직후 한 프레임 뒤"에
+     * 카메라를 원래 값으로 되돌린다.
      */
-    viewer.addEventListener('camera-change', () => {
-      viewer.setAttribute('camera-orbit', LOCK.orbit);
-      viewer.setAttribute('field-of-view', LOCK.fov);
-      viewer.setAttribute(
-        'scale',
-        `${LOCK.scale} ${LOCK.scale} ${LOCK.scale}`
-      );
-
-      // 즉시 목표 카메라 값으로 점프
-      viewer.jumpCameraToGoal();
-    });
-
-    /**
-     * 초기 로드시에도 한 번 확정
-     * (로딩 타이밍으로 인한 1차 튐 방지)
-     */
-    viewer.addEventListener('load', () => {
+    viewer.addEventListener('dblclick', () => {
       requestAnimationFrame(() => {
+        viewer.setAttribute('camera-orbit', LOCK.orbit);
+        viewer.setAttribute('field-of-view', LOCK.fov);
+        viewer.setAttribute(
+          'scale',
+          `${LOCK.scale} ${LOCK.scale} ${LOCK.scale}`
+        );
         viewer.jumpCameraToGoal();
       });
     });
