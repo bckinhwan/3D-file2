@@ -24,7 +24,7 @@
       height: 100vh;
       background: #fff;
 
-      /* 완전 비인터랙션 */
+      /* 🔒 완전 비인터랙션 */
       pointer-events: none;
     }
   </style>
@@ -41,7 +41,7 @@
 
     auto-rotate
     auto-rotate-delay="0"
-    rotation-per-second="8deg"
+    rotation-per-second="5deg"
 
     exposure="1.05"
     shadow-intensity="0.2"
@@ -53,36 +53,44 @@
   <script>
     const viewer = document.getElementById('viewer');
 
+    /* =========================
+       카메라 프리셋
+    ========================= */
+
     // 데스크탑 기본값
     const DESKTOP = {
       orbit: '0deg 75deg 8m',
+      target: '0m 0.25m 0m',   // 🔼 살짝 위
       fov: '24deg',
       scale: '0.75'
     };
 
-    // 모바일: 살짝 작게
+    // 모바일: 조금 더 위 + 작게
     const MOBILE = {
-      orbit: '0deg 75deg 10m', // 🔹 카메라 조금 뒤로
+      orbit: '0deg 75deg 9m',
+      target: '0m 0.3m 0m',    // 🔼 모바일은 조금 더
       fov: '24deg',
-      scale: '0.65'            // 🔹 모델 약 13% 축소
+      scale: '0.65'
     };
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
-
     const setting = isMobile ? MOBILE : DESKTOP;
 
-    viewer.setAttribute(
-      'camera-orbit',
-      setting.orbit
-    );
-    viewer.setAttribute(
-      'field-of-view',
-      setting.fov
-    );
+    /* =========================
+       카메라 적용
+    ========================= */
+
+    viewer.setAttribute('camera-orbit', setting.orbit);
+    viewer.setAttribute('camera-target', setting.target);
+    viewer.setAttribute('field-of-view', setting.fov);
     viewer.setAttribute(
       'scale',
       `${setting.scale} ${setting.scale} ${setting.scale}`
     );
+
+    /* =========================
+       로드 후 확정
+    ========================= */
 
     viewer.addEventListener('load', () => {
       requestAnimationFrame(() => {
@@ -92,6 +100,7 @@
   </script>
 </body>
 </html>
+
 
 
 
