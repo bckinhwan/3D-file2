@@ -53,14 +53,14 @@
 
     const DESKTOP = {
       orbit: '0deg 75deg 8m',
-      target: '0m 0.08m 0m',   // 🔥 현실적인 값
+      target: '0m 0.25m 0m',
       fov: '24deg',
       scale: '0.75'
     };
 
     const MOBILE = {
       orbit: '0deg 75deg 7m',
-      target: '0m 0.12m 0m',   // 🔥 모바일은 살짝만 더
+      target: '0m 0.3m 0m',
       fov: '24deg',
       scale: '0.65'
     };
@@ -79,8 +79,14 @@
       viewer.jumpCameraToGoal();
     }
 
+    /**
+     * 🔑 핵심:
+     * model-visibility === 진짜로 "보일 준비 끝"
+     */
     viewer.addEventListener('model-visibility', () => {
-      requestAnimationFrame(applyCamera);
+      requestAnimationFrame(() => {
+        applyCamera();
+      });
     });
   </script>
 </body>
