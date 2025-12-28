@@ -23,45 +23,37 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
-
-      /* 🔒 완전 비인터랙션 */
       pointer-events: none;
     }
   </style>
 </head>
 
 <body>
+  <!-- model-viewer -->
   <model-viewer
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
-
-    reveal="manual"            <!-- 🔥 로딩바/스피너 제거 -->
+    reveal="manual"
     camera-controls="false"
     disable-zoom
     interaction-prompt="none"
-
     auto-rotate
     auto-rotate-delay="0"
     rotation-per-second="5deg"
-
     exposure="1.05"
     shadow-intensity="0.2"
-
-    bounds="legacy"
-  >
+    bounds="legacy">
   </model-viewer>
 
   <script>
     const viewer = document.getElementById('viewer');
 
-    // 데스크탑 기본값
     const DESKTOP = {
       orbit: '0deg 75deg 9m',
       fov: '24deg',
       scale: '0.75'
     };
 
-    // 모바일: 살짝 작게
     const MOBILE = {
       orbit: '0deg 75deg 8m',
       fov: '24deg',
@@ -71,7 +63,6 @@
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     const setting = isMobile ? MOBILE : DESKTOP;
 
-    // 카메라 세팅
     viewer.setAttribute('camera-orbit', setting.orbit);
     viewer.setAttribute('field-of-view', setting.fov);
     viewer.setAttribute(
@@ -79,10 +70,6 @@
       `${setting.scale} ${setting.scale} ${setting.scale}`
     );
 
-    /**
-     * 🔑 모델이 실제로 렌더 가능한 상태가 되면
-     * 그때 화면에 등장 (로딩바 없이)
-     */
     viewer.addEventListener('model-visibility', () => {
       viewer.show();
       viewer.jumpCameraToGoal();
@@ -91,6 +78,3 @@
 </body>
 </html>
 
-  </script>
-</body>
-</html>
