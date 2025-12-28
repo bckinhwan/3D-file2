@@ -23,8 +23,6 @@
       width: 100vw;
       height: 100vh;
       background: #fff;
-
-      /* 완전 비인터랙션 */
       pointer-events: none;
     }
   </style>
@@ -53,46 +51,40 @@
   <script>
     const viewer = document.getElementById('viewer');
 
-    // 데스크탑 기본값
     const DESKTOP = {
       orbit: '0deg 75deg 8m',
+      target: '0m 0.08m 0m',   // 🔥 현실적인 값
       fov: '24deg',
       scale: '0.75'
     };
 
-    // 모바일: 살짝 작게
     const MOBILE = {
-      orbit: '0deg 75deg 8m', // 🔹 카메라 조금 뒤로
+      orbit: '0deg 75deg 7m',
+      target: '0m 0.12m 0m',   // 🔥 모바일은 살짝만 더
       fov: '24deg',
-      scale: '0.65'            // 🔹 모델 약 13% 축소
+      scale: '0.65'
     };
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
-
     const setting = isMobile ? MOBILE : DESKTOP;
 
-    viewer.setAttribute(
-      'camera-orbit',
-      setting.orbit
-    );
-    viewer.setAttribute(
-      'field-of-view',
-      setting.fov
-    );
-    viewer.setAttribute(
-      'scale',
-      `${setting.scale} ${setting.scale} ${setting.scale}`
-    );
+    function applyCamera() {
+      viewer.setAttribute('camera-orbit', setting.orbit);
+      viewer.setAttribute('camera-target', setting.target);
+      viewer.setAttribute('field-of-view', setting.fov);
+      viewer.setAttribute(
+        'scale',
+        `${setting.scale} ${setting.scale} ${setting.scale}`
+      );
+      viewer.jumpCameraToGoal();
+    }
 
-    viewer.addEventListener('load', () => {
-      requestAnimationFrame(() => {
-        viewer.jumpCameraToGoal();
-      });
+    viewer.addEventListener('model-visibility', () => {
+      requestAnimationFrame(applyCamera);
     });
   </script>
 </body>
 </html>
-
 
 
 
