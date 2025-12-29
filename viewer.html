@@ -15,88 +15,130 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden;
       background: #fff;
+      overflow: hidden;
     }
 
     model-viewer {
       width: 100vw;
       height: 100vh;
       background: #fff;
-
-      /* 완전 비인터랙션 */
-      pointer-events: none;
+      pointer-events: none; /* 모델 직접 조작 금지 */
     }
 
     /* ===============================
-       model-viewer 로딩 UI → 흰색
+       로딩 UI → 흰색
     =============================== */
-
-    /* 로딩 배경 (회색 → 흰색) */
-    model-viewer::part(default-progress-mask) {
-      background-color: #fff !important;
-    }
-
-    /* 로딩 바 자체 (회색 → 흰색) */
+    model-viewer::part(default-progress-mask),
     model-viewer::part(default-progress-bar),
-    model-viewer::part(progress-bar) {
-      background-color: #fff !important;
+    model-viewer::part(progress-bar),
+    model-viewer::part(loading-overlay) {
+      background: #fff !important;
     }
 
-    /* 남는 오버레이 대비 */
-    model-viewer::part(loading-overlay) {
-      background-color: #fff !important;
+    /* ===============================
+       회전 핸들바 UI
+    =============================== */
+    .rotate-handle {
+      position: fixed;
+      bottom: 110px; /* nav 위 */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    .rotate-handle input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 2px;
+      background: #000;
+      opacity: 0.35;
+    }
+
+    .rotate-handle input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .rotate-label {
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: #000;
+      opacity: 0.45;
+      margin-top: 10px;
+      font-family: system-ui, sans-serif;
     }
   </style>
 </head>
 
 <body>
+
   <model-viewer
     id="viewer"
     src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
-
     camera-controls="false"
     disable-zoom
     interaction-prompt="none"
-
-    auto-rotate
-    auto-rotate-delay="0"
-    rotation-per-second="5deg"
-
     exposure="1.05"
     shadow-intensity="0.2"
-
     bounds="legacy"
   >
   </model-viewer>
 
+  <!-- 🔘 회전 핸들바 -->
+  <div class="rotate-handle">
+    <input
+      id="rotateRange"
+      type="range"
+      min="-180"
+      max="180"
+      value="0"
+      step="0.5"
+    />
+    <div class="rotate-label">ROTATE</div>
+  </div>
+
   <script>
     const viewer = document.getElementById('viewer');
+    const range = document.getElementById('rotateRange');
 
-    // 데스크탑
-    const DESKTOP = {
-      orbit: '0deg 75deg 9m',
+    const BASE = {
+      elevation: '75deg',
+      distance: window.matchMedia('(max-width: 768px)').matches ? '8m' : '9m',
       fov: '24deg',
-      scale: '0.75'
+      scale: window.matchMedia('(max-width: 768px)').matches ? '0.65' : '0.75'
     };
 
-    // 모바일
-    const MOBILE = {
-      orbit: '0deg 75deg 8m',
-      fov: '24deg',
-      scale: '0.65'
-    };
-
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const setting = isMobile ? MOBILE : DESKTOP;
-
-    viewer.setAttribute('camera-orbit', setting.orbit);
-    viewer.setAttribute('field-of-view', setting.fov);
+    viewer.setAttribute(
+      'field-of-view',
+      BASE.fov
+    );
     viewer.setAttribute(
       'scale',
-      `${setting.scale} ${setting.scale} ${setting.scale}`
+      `${BASE.scale} ${BASE.scale} ${BASE.scale}`
     );
+
+    function updateOrbit(angle) {
+      viewer.setAttribute(
+        'camera-orbit',
+        `${angle}deg ${BASE.elevation} ${BASE.distance}`
+      );
+    }
+
+    updateOrbit(0);
+
+    range.addEventListener('input', (e) => {
+      updateOrbit(e.target.value);
+    });
   </script>
+
 </body>
 </html>
 
