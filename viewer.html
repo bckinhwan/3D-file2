@@ -10,23 +10,26 @@
 </script>
 
 <style>
+/* ===============================
+   GLOBAL (TRANSPARENT)
+=============================== */
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: transparent; /* 🔥 완전 투명 */
   overflow: hidden;
 }
 
 /* ===============================
-   MODEL
+   MODEL VIEWER
 =============================== */
 model-viewer {
   width: 100vw;
   height: 100vh;
-  background: #fff;
-  pointer-events: none; /* ❗ 모델 직접 조작 금지 */
+  background: transparent; /* 🔥 WebGL 캔버스 투명 */
+  pointer-events: none;     /* ❗ 모델 직접 조작 금지 */
 }
 
 /* ===============================
@@ -43,12 +46,14 @@ model-viewer {
   cursor: grabbing;
 }
 
-/* 로딩 UI 흰색 */
+/* ===============================
+   LOADING UI (TRANSPARENT)
+=============================== */
 model-viewer::part(default-progress-mask),
 model-viewer::part(default-progress-bar),
 model-viewer::part(progress-bar),
 model-viewer::part(loading-overlay) {
-  background: #fff !important;
+  background: transparent !important;
 }
 </style>
 </head>
@@ -60,7 +65,10 @@ model-viewer::part(loading-overlay) {
   src="https://raw.githubusercontent.com/bckinhwan/3D-file2/main/cloth_jacket.glb"
   exposure="1.05"
   shadow-intensity="0.2"
-  bounds="legacy">
+  bounds="legacy"
+  field-of-view="24deg"
+  transparent-background
+>
 </model-viewer>
 
 <!-- 👻 투명 인터랙션 레이어 -->
@@ -78,7 +86,7 @@ const BASE = {
   scale: isMobile ? 0.65 : 0.65
 };
 
-viewer.setAttribute('field-of-view', '24deg');
+/* 모델 스케일 */
 viewer.setAttribute(
   'scale',
   `${BASE.scale} ${BASE.scale} ${BASE.scale}`
@@ -88,7 +96,7 @@ let dragging = false;
 let lastX = 0;
 let angle = 0;
 
-/* 초기 */
+/* 초기 카메라 */
 updateOrbit();
 
 function updateOrbit() {
@@ -98,13 +106,17 @@ function updateOrbit() {
   );
 }
 
-/* 마우스 / 터치 공통 */
+/* ===============================
+   POINTER INTERACTION
+=============================== */
 layer.addEventListener('pointerdown', (e) => {
   dragging = true;
   lastX = e.clientX;
 });
 
-window.addEventListener('pointerup', () => dragging = false);
+window.addEventListener('pointerup', () => {
+  dragging = false;
+});
 
 window.addEventListener('pointermove', (e) => {
   if (!dragging) return;
@@ -112,8 +124,7 @@ window.addEventListener('pointermove', (e) => {
   const dx = e.clientX - lastX;
   lastX = e.clientX;
 
-  /* 🔥 핵심: 실제 만지는 감각 */
-  angle += dx * 0.35;
+  angle += dx * 0.35; /* 회전 감도 */
   updateOrbit();
 });
 </script>
