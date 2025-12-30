@@ -84,12 +84,18 @@ viewer.setAttribute(
   `${BASE.scale} ${BASE.scale} ${BASE.scale}`
 );
 
+/* ===============================
+   ROTATION STATE
+=============================== */
+let angle = -90;
+let velocity = 0;
 let dragging = false;
 let lastX = 0;
-let angle = -90;
 
-/* 초기 */
-updateOrbit();
+/* 감도 (모바일 ↓) */
+const SENSITIVITY = isMobile ? 0.12 : 0.35;
+/* 감속 (자연스러움 핵심) */
+const DAMPING = 0.92;
 
 function updateOrbit() {
   viewer.setAttribute(
@@ -98,13 +104,17 @@ function updateOrbit() {
   );
 }
 
-/* 마우스 / 터치 공통 */
+/* ===============================
+   INPUT
+=============================== */
 layer.addEventListener('pointerdown', (e) => {
   dragging = true;
   lastX = e.clientX;
 });
 
-window.addEventListener('pointerup', () => dragging = false);
+window.addEventListener('pointerup', () => {
+  dragging = false;
+});
 
 window.addEventListener('pointermove', (e) => {
   if (!dragging) return;
@@ -112,10 +122,28 @@ window.addEventListener('pointermove', (e) => {
   const dx = e.clientX - lastX;
   lastX = e.clientX;
 
-  /* 🔥 핵심: 실제 만지는 감각 */
-  angle += dx * 0.35;
-  updateOrbit();
+  /* 🔥 바로 각도 ❌ → 속도에 누적 */
+  velocity += dx * SENSITIVITY;
 });
+
+/* ===============================
+   ANIMATION LOOP
+=============================== */
+function animate() {
+  /* 속도 적용 */
+  angle += velocity;
+
+  /* 감속 */
+  velocity *= DAMPING;
+
+  /* 미세 떨림 제거 */
+  if (Math.abs(velocity) < 0.001) velocity = 0;
+
+  updateOrbit();
+  requestAnimationFrame(animate);
+}
+
+animate();
 </script>
 
 </body>
